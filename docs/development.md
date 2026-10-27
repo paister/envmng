@@ -25,7 +25,7 @@ pnpm pack
 
 The `prepack` hook builds automatically. The tarball contains compiled output, the README, and documentation. Runtime dependencies are installed by the consuming package manager.
 
-See [Publishing](./publishing.md) for release metadata, verification, and the first npm release. Publishing is manual; CI does not receive npm credentials or publish packages.
+See [Publishing](./publishing.md) for release metadata, verification, and npm publication. Publishing is manual; CI does not receive npm credentials or publish packages.
 
 ## Code map
 

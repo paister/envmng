@@ -2,7 +2,7 @@
 
 [Documentation](./index.md) · [File layout](./concepts.md) · [CLI reference](./cli.md)
 
-Requires **Node.js ≥22.12**. Registry installation is available after the first npm release; for an unreleased version, use a [local build](#local-development-and-unreleased-builds).
+Requires **Node.js ≥22.12**.
 
 ## Install
 

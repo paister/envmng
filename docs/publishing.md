@@ -37,7 +37,7 @@ npm publish
 - `publishConfig` explicitly selects the public npm registry and public access. Consumer installation has no build/install hooks and does not require pnpm.
 - Enable npm account 2FA and follow npm's authentication prompts. Never commit registry credentials or tokens. Dry runs do not reserve a name or prove that the final publication will be authorized.
 
-After publishing, verify `npm view envmng version`, install the released version in a fresh project, and remove the temporary “after the first release” notices from the README and install/API docs. Create a matching Git tag and GitHub release for the published version.
+After publishing, verify `npm view envmng version` and install the released version in a fresh project. Create a matching Git tag and GitHub release for the published version.
 
 ## Later releases
 

@@ -6,7 +6,7 @@ Import the public API from `envmng` for Node.js environment loading or repositor
 
 ## Installation and runtime requirements
 
-Requires Node.js ≥22.12. Install with `npm install envmng` or `pnpm add envmng` after the first npm release; [local builds](./getting-started.md#local-development-and-unreleased-builds) work before publication. If application startup imports `envmng`, declare it as a **runtime dependency** in the consuming package. Exports provide ESM JavaScript and TypeScript declarations from `dist`; no CommonJS build is provided.
+Requires Node.js ≥22.12. Install with `npm install envmng` or `pnpm add envmng`. For development, use a [local build](./getting-started.md#local-development-and-unreleased-builds). If application startup imports `envmng`, declare it as a **runtime dependency** in the consuming package. Exports provide ESM JavaScript and TypeScript declarations from `dist`; no CommonJS build is provided.
 
 ## Load environment variables
 

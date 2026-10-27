@@ -1,5 +1,9 @@
 # envmng
 
+[![npm version](https://img.shields.io/npm/v/envmng.svg)](https://www.npmjs.com/package/envmng)
+[![CI](https://github.com/paister/envmng/actions/workflows/ci.yml/badge.svg)](https://github.com/paister/envmng/actions/workflows/ci.yml)
+[![license](https://img.shields.io/npm/l/envmng.svg)](LICENSE)
+
 **Define environment variables once. Generate the `.env` files each app needs.**
 
 A CLI for managing environment files across apps and packages. Keep values in a central profile, select each app's variables with templates, and check for missing values and declarations before generating files.
@@ -18,8 +22,6 @@ npm install --save-dev envmng
 ```
 
 Or use `pnpm add -D envmng`. See [installation and setup](./docs/getting-started.md) for global and local builds.
-
-> The registry commands apply after the first npm release. Until then, install a [local package](./docs/getting-started.md#local-development-and-unreleased-builds).
 
 ## Quick start
 
