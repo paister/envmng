@@ -1,0 +1,10 @@
+.vitest/
+dist/
+node_modules/
+*.tgz
+.env
+.env.*
+.*.env
+.envmng
+!.env.example
+coverage/

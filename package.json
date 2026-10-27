@@ -1,0 +1,68 @@
+{
+  "name": "envmng",
+  "version": "0.1.0",
+  "license": "MIT",
+  "author": "Marvin Pöperny",
+  "description": "Manage central environment profiles and generate per-app .env files from templates.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paister/envmng.git"
+  },
+  "homepage": "https://github.com/paister/envmng#readme",
+  "bugs": {
+    "url": "https://github.com/paister/envmng/issues"
+  },
+  "keywords": [
+    "cli",
+    "dotenv",
+    "environment-variables",
+    "configuration",
+    "monorepo"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "files": [
+    "dist",
+    "docs"
+  ],
+  "type": "module",
+  "bin": {
+    "envmng": "./dist/envmng.mjs"
+  },
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "scripts": {
+    "build": "vp pack",
+    "check": "vp check",
+    "envmng": "node dist/envmng.mjs",
+    "prepack": "pnpm run build",
+    "test:cli": "pnpm run build && node --test tests/cli.test.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vp test run",
+    "test:package": "pnpm run build && node --test tests/package.test.mjs",
+    "validate": "pnpm run typecheck && pnpm run test && pnpm run test:cli",
+    "release:check": "node scripts/check-release.mjs && pnpm run validate && pnpm run test:package",
+    "prepublishOnly": "pnpm run release:check"
+  },
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "yargs": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.2",
+    "@types/yargs": "^17.0.35",
+    "typescript": "^5.9.3",
+    "vite-plus": "1.4.0"
+  },
+  "packageManager": "pnpm@12.15.0",
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}
