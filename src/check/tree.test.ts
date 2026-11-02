@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vite-plus/test";
-import type { CheckReport } from "./check-analysis";
-import { formatCheckTree } from "./check-tree";
+import type { CheckReport } from "./analysis";
+import { formatCheckTree } from "./tree";
 
 const okReport = (name: string): CheckReport => ({
   name,

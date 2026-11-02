@@ -1,11 +1,12 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { confirmProd } from "../confirm.ts";
-import { assertEnvName, namedEnvFile } from "../names.ts";
-import { parseEnvFile } from "../parse.ts";
-import { renderTemplate } from "../render.ts";
-import { writeActiveEnv } from "../config.ts";
-import { consumerRelPath, listConsumerDirs, writeGeneratedEnv } from "../workspace.ts";
+import { confirmProd } from "../interactive/confirm.ts";
+import { AbortedError } from "../core/errors.ts";
+import { assertEnvName, namedEnvFile } from "../core/names.ts";
+import { parseEnvFile } from "../core/parse.ts";
+import { renderTemplate } from "../core/render.ts";
+import { writeActiveEnv } from "../workspace/config.ts";
+import { consumerRelPath, listConsumerDirs, writeGeneratedEnv } from "../workspace/consumers.ts";
 
 export type SetOptions = {
   root: string;
@@ -13,13 +14,6 @@ export type SetOptions = {
   yes: boolean;
   verbose: boolean;
 };
-
-export class AbortedError extends Error {
-  constructor(message = "Aborted.") {
-    super(message);
-    this.name = "AbortedError";
-  }
-}
 
 /** Render named profile templates into generated .env files. Throws AbortedError if prod confirm is declined. */
 export const setEnv = async ({ root, name, yes, verbose }: SetOptions): Promise<void> => {

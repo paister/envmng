@@ -1,7 +1,7 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { namedEnvFile, profileNameFromFilename } from "./names.ts";
-import { parseEnvFile, upsertEnvKey } from "./parse.ts";
+import { namedEnvFile, profileNameFromFilename } from "../core/names.ts";
+import { parseEnvFile, upsertEnvKey } from "../core/parse.ts";
 
 export type UpsertResult = { existed: boolean; created: boolean };
 

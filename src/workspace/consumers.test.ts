@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vite-plus/test";
-import { consumerRelPath, listConsumerDirs, listExistingProfileNames } from "./workspace";
+import { consumerRelPath, listConsumerDirs, listExistingProfileNames } from "./consumers";
 
 describe("listConsumerDirs", () => {
   it("finds dirs with .env.example under any layout", () => {

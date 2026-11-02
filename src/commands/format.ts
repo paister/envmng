@@ -1,8 +1,8 @@
 import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { formatEnvFile } from "../format.ts";
-import { NAMED_ENV_FILE_RE } from "../names.ts";
-import { consumerRelPath, listConsumerDirs } from "../workspace.ts";
+import { formatEnvFile } from "../core/format.ts";
+import { NAMED_ENV_FILE_RE } from "../core/names.ts";
+import { consumerRelPath, listConsumerDirs } from "../workspace/consumers.ts";
 
 /** Format existing env files in the root and known consumer directories in place. */
 export const formatEnv = ({ root }: { root: string }): void => {

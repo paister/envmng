@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
-import { profileNameFromFilename } from "./names.ts";
+import { profileNameFromFilename } from "../core/names.ts";
 
 /** Directory names skipped while walking for consumers. */
 const SKIP_DIR_NAMES = new Set([

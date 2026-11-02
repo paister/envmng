@@ -1,14 +1,16 @@
 import type { Argv } from "yargs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { addEnvKey, resolveAddInput } from "./commands/add.ts";
-import { checkEnv } from "./commands/check.ts";
-import { createEnv } from "./commands/create.ts";
-import { deleteEnv } from "./commands/delete.ts";
-import { initEnv } from "./commands/init.ts";
-import { formatEnv } from "./commands/format.ts";
-import { removeEnvVar } from "./commands/remove.ts";
-import { AbortedError, setEnv } from "./commands/set.ts";
+import { addEnvKey } from "../commands/add.ts";
+import { checkEnv } from "../commands/check.ts";
+import { createEnv } from "../commands/create.ts";
+import { deleteEnv } from "../commands/delete.ts";
+import { formatEnv } from "../commands/format.ts";
+import { initEnv } from "../commands/init.ts";
+import { removeEnvVar } from "../commands/remove.ts";
+import { setEnv } from "../commands/set.ts";
+import { AbortedError } from "../core/errors.ts";
+import { resolveAddInput } from "./add-input.ts";
 
 const withName = <T>(y: Argv<T>) =>
   y.positional("name", {

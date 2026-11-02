@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 import { resolve } from "node:path";
-import { findMonorepoRoot } from "./root";
+import { findMonorepoRoot } from "../core/root";
 
 export type LoadGeneratedEnvOptions = {
   /**

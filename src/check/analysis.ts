@@ -1,6 +1,6 @@
 import { parse } from "dotenv";
-import { parseEnvFile } from "./parse.ts";
-import { collectPlaceholders } from "./render.ts";
+import { parseEnvFile } from "../core/parse.ts";
+import { collectPlaceholders } from "../core/render.ts";
 
 export type CheckSeverity = "error" | "warning";
 

@@ -2,9 +2,9 @@ import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vite-plus/test";
-import { parseEnvFile } from "../parse";
+import type { CheckReport } from "../check/index.ts";
+import { parseEnvFile } from "../core/parse";
 import { applyCheckFixes, checkEnv } from "./check";
-import type { CheckReport } from "../check-analysis";
 
 describe("applyCheckFixes / check --fix", () => {
   it("adds used_missing keys to app + root examples", () => {

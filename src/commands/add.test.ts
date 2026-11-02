@@ -2,7 +2,7 @@ import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vite-plus/test";
-import { parseEnvFile } from "../parse";
+import { parseEnvFile } from "../core/parse";
 import { addEnvKey } from "./add";
 
 const roots: string[] = [];

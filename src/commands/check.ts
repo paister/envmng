@@ -1,13 +1,22 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { analyzeAudit } from "../audit-analysis.ts";
-import { consumerRelFromIssueFile, ensureConsumerTemplates, ensureRootExample } from "../catalogue.ts";
-import { analyzeProfile, isCheckPassing, recountCheckReport, sourceCheckReport, type AppSnapshot, type CheckIssue, type CheckReport, type ProfileSnapshot } from "../check-analysis.ts";
-import { formatCheckTree } from "../check-tree.ts";
-import { assertEnvName, namedEnvFile } from "../names.ts";
-import { parseEnvFile, upsertEnvKey } from "../parse.ts";
-import { collectUsedEnvKeys } from "../scan-usage.ts";
-import { consumerRelPath, listConsumerDirs, listExistingProfileNames } from "../workspace.ts";
+import {
+  analyzeAudit,
+  analyzeProfile,
+  collectUsedEnvKeys,
+  formatCheckTree,
+  isCheckPassing,
+  recountCheckReport,
+  sourceCheckReport,
+  type AppSnapshot,
+  type CheckIssue,
+  type CheckReport,
+  type ProfileSnapshot,
+} from "../check/index.ts";
+import { consumerRelFromIssueFile, ensureConsumerTemplates, ensureRootExample } from "../catalogue/index.ts";
+import { assertEnvName, namedEnvFile } from "../core/names.ts";
+import { parseEnvFile, upsertEnvKey } from "../core/parse.ts";
+import { consumerRelPath, listConsumerDirs, listExistingProfileNames } from "../workspace/consumers.ts";
 
 export type CheckOptions = {
   root: string;

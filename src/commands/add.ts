@@ -1,10 +1,9 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { ensureRootExample, formatUpsertLog, upsertEnvFile } from "../catalogue.ts";
-import { assertEnvName, namedEnvFile } from "../names.ts";
-import { assertEnvKey, parseEnvFile, upsertEnvKey } from "../parse.ts";
-import { openPromptSession, printCommandHint } from "../prompt.ts";
-import { listExistingProfileNames } from "../workspace.ts";
+import { ensureRootExample, formatUpsertLog, upsertEnvFile } from "../catalogue/index.ts";
+import { assertEnvName, namedEnvFile } from "../core/names.ts";
+import { assertEnvKey, parseEnvFile, upsertEnvKey } from "../core/parse.ts";
+import { listExistingProfileNames } from "../workspace/consumers.ts";
 
 export type AddOptions = {
   root: string;
@@ -62,51 +61,4 @@ export const addEnvKey = async ({ root, name, key, value, syncProfiles }: AddOpt
   }
 
   console.log(`\nProfile updated. To validate and apply: envmng check ${name} && envmng set ${name}`);
-};
-
-/**
- * Resolve add args; prompts interactively for anything still missing.
- */
-export const resolveAddInput = async (input: AddInput): Promise<AddOptions> => {
-  let { name, key, value } = input;
-  const syncProfiles = Boolean(input.syncProfiles);
-  const needsPrompt = !name || !key || value === undefined;
-
-  if (!needsPrompt) {
-    return {
-      root: input.root,
-      name: name!,
-      key: key!,
-      value: value!,
-      syncProfiles,
-    };
-  }
-
-  printCommandHint([
-    "Usage:  envmng add <name> --key KEY --value VALUE [--sync-profiles]",
-    "Example: envmng add local --key NODE_ENV --value development",
-    "",
-    "Missing fields — interactive fill-in:",
-  ]);
-
-  const session = openPromptSession();
-  if (!session) {
-    throw new Error("Missing arguments and no TTY for prompts. Use: envmng add <name> --key KEY --value VALUE");
-  }
-
-  try {
-    if (!name) {
-      name = await session.askUntil("Profile name (e.g. local): ", assertEnvName);
-    }
-    if (!key) {
-      key = await session.askUntil("Key: ", assertEnvKey);
-    }
-    if (value === undefined) {
-      value = await session.ask("Value (empty allowed): ");
-    }
-  } finally {
-    session.close();
-  }
-
-  return { root: input.root, name, key, value, syncProfiles };
 };

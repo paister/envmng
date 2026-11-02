@@ -1,4 +1,4 @@
-import type { CheckIssue, CheckIssueCode, CheckReport, CheckSeverity } from "./check-analysis.ts";
+import type { CheckIssue, CheckIssueCode, CheckReport, CheckSeverity } from "./analysis.ts";
 
 const CODE_LABEL: Record<CheckIssueCode, string> = {
   missing_central: "missing central profile",

@@ -4,7 +4,7 @@ import {
   isCheckPassing,
   isEmptyEnvValue,
   type ProfileSnapshot,
-} from "./check-analysis";
+} from "./analysis";
 
 const baseSnap = (overrides: Partial<ProfileSnapshot> = {}): ProfileSnapshot => ({
   name: "local",

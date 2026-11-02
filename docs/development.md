@@ -29,13 +29,19 @@ See [Publishing](./publishing.md) for release metadata, verification, and npm pu
 
 ## Code map
 
-| Location                                                              | Responsibility                                                  |
-| --------------------------------------------------------------------- | --------------------------------------------------------------- |
-| `src/envmng.ts`, `src/cli.ts`                                         | CLI entry, working-directory root discovery, commands and flags |
-| `src/commands/`                                                       | File operations and command orchestration                       |
-| `src/check-analysis.ts`, `src/audit-analysis.ts`, `src/scan-usage.ts` | Profile and source analysis                                     |
-| `src/parse.ts`, `src/render.ts`, `src/format.ts`                      | Parsing, substitution, and formatting                           |
-| `src/load-env.ts`, `src/index.ts`                                     | Runtime loader and public API                                   |
-| `tests/cli.test.mjs`                                                  | Built CLI smoke tests                                           |
+| Location             | Responsibility                                                                 |
+| -------------------- | ------------------------------------------------------------------------------ |
+| `src/envmng.ts`        | Bin entry                                                                   |
+| `src/cli/`             | yargs wiring + interactive arg resolution (presentation)                    |
+| `src/commands/`        | Command orchestration                                                       |
+| `src/interactive/`     | Shared TTY confirmations used by commands                                   |
+| `src/check/`           | Pure check/audit analysis                                                   |
+| `src/core/`            | Env text primitives, names, root discovery, shared errors                   |
+| `src/workspace/`       | Consumer discovery, active profile, gitignore, runtime loader               |
+| `src/catalogue/`       | Root/consumer `.env.example` mutation                                       |
+| `src/index.ts`         | Public library API                                                          |
+| `tests/cli.test.mjs`   | Built CLI smoke tests                                                       |
+
+Dependency direction: `cli → commands → {check, catalogue, workspace, core, interactive}`. Domain packages (`check`, `core`, `catalogue`, `workspace`) do not import `cli` or `commands`.
 
 Update the relevant docs when changing behavior. Use fake values in tests and examples, never real credentials.

@@ -2,7 +2,7 @@ import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vite-plus/test";
-import { ensureGitignore, gitignoreHasEntry } from "./gitignore";
+import { ensureGitignore, gitignoreHasEntry } from "./gitignore.ts";
 
 describe("gitignoreHasEntry", () => {
   it("matches exact lines only", () => {
