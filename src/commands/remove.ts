@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { assertEnvName, namedEnvFile } from "../names.ts";
-import { assertEnvKey, removeEnvKey } from "../parse.ts";
+import { assertEnvName, namedEnvFile } from "../core/names.ts";
+import { assertEnvKey, removeEnvKey } from "../core/parse.ts";
 
 export type RemoveOptions = {
   root: string;

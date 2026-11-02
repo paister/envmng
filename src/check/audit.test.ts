@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vite-plus/test";
-import { analyzeAudit, isAuditPassing } from "./audit-analysis";
+import { analyzeAudit, isAuditPassing } from "./audit";
 
 describe("analyzeAudit", () => {
   it("flags used-missing and declared-unused", () => {

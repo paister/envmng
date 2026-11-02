@@ -4,11 +4,11 @@ import {
   isCheckPassing,
   isEmptyEnvValue,
   type ProfileSnapshot,
-} from "./check-analysis";
+} from "./analysis";
 
 const baseSnap = (overrides: Partial<ProfileSnapshot> = {}): ProfileSnapshot => ({
   name: "local",
-  profileFile: ".local.env",
+  profileFile: ".envmng.local",
   centralText: "FOO=bar\nBAZ=\n",
   rootExampleText: "FOO=\nBAZ=\n",
   apps: [
@@ -69,7 +69,7 @@ describe("analyzeProfile", () => {
           severity: "warning",
           code: "empty_value",
           key: "FOO",
-          refs: ["apps/api/.local.env"],
+          refs: ["apps/api/.envmng.local"],
         }),
       ]);
       expect(report.errorCount).toBe(0);
@@ -165,8 +165,10 @@ describe("analyzeProfile", () => {
         ],
       })
     );
-    expect(report.issues.some(i => i.code === "unresolved_placeholder" && i.key === "FOO")).toBe(
-      true
-    );
+    const issue = report.issues.find(i => i.code === "unresolved_placeholder" && i.key === "FOO");
+    expect(issue).toMatchObject({
+      file: ".envmng.local",
+      refs: ["apps/api/.envmng.local"],
+    });
   });
 });

@@ -1,8 +1,8 @@
 import { copyFileSync, existsSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { ensureGitignore, logGitignoreResult } from "../gitignore.ts";
-import { assertEnvName, namedEnvFile } from "../names.ts";
-import { consumerRelPath, listConsumerDirs } from "../workspace.ts";
+import { assertEnvName, namedEnvFile } from "../core/names.ts";
+import { consumerRelPath, listConsumerDirs } from "../workspace/consumers.ts";
+import { ensureGitignore, logGitignoreResult } from "../workspace/gitignore.ts";
 
 export type CreateOptions = {
   root: string;
@@ -23,7 +23,7 @@ export const createEnv = ({ root, name, force, quiet = false }: CreateOptions): 
     throw new Error(`Missing root .env.example (template for central values).`);
   }
 
-  logGitignoreResult(ensureGitignore(root, { profileName: name }));
+  logGitignoreResult(ensureGitignore(root));
 
   if (existsSync(rootTarget) && !force) {
     console.log(`skip ${file} (exists; use --force to overwrite)`);

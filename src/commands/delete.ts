@@ -1,10 +1,10 @@
 import { existsSync, unlinkSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { clearActiveEnvIf, ENVMNG_CONFIG_FILE } from "../config.ts";
-import { confirmByTyping } from "../confirm.ts";
-import { assertEnvName, namedEnvFile } from "../names.ts";
-import { listConsumerDirs } from "../workspace.ts";
-import { AbortedError } from "./set.ts";
+import { confirmByTyping } from "../interactive/confirm.ts";
+import { AbortedError } from "../core/errors.ts";
+import { assertEnvName, namedEnvFile } from "../core/names.ts";
+import { clearActiveEnvIf, ENVMNG_CONFIG_FILE } from "../workspace/config.ts";
+import { listConsumerDirs } from "../workspace/consumers.ts";
 
 export type DeleteOptions = {
   root: string;

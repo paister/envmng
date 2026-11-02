@@ -11,7 +11,7 @@ pnpm exec envmng check local
 pnpm exec envmng check
 ```
 
-A named check validates that profile; an unnamed check discovers profiles from root and consumer `.<name>.env` files. Examples alone do not create profiles. With none found, the unnamed check fails before scanning sources: create a profile first.
+A named check validates that profile; an unnamed check discovers profiles from root and consumer `.envmng.<name>` files. Examples alone do not create profiles. With none found, the unnamed check fails before scanning sources: create a profile first.
 
 Source comparison runs once across all consumers. Its findings merge into a single-profile report or appear in a trailing `source` node for multiple profiles. Consumer discovery follows the [CLI scope](./cli.md#files-and-scope).
 
@@ -29,7 +29,7 @@ Errors always fail; warnings fail only in strict mode.
 | `drift_central_key`      | Warning | Add the missing root example key to the central profile with an appropriate value. Repairs copy the sample.                                                                                |
 | `drift_app_key`          | Warning | Add the missing consumer example assignment to its profile template. Repairs copy the example value.                                                                                       |
 | `missing_root_example`   | Warning | Restore a root catalogue with empty/safe samples. Central drift cannot be checked; creation requires this file.                                                                            |
-| `declared_unused`        | Warning | Check dynamic access, shared packages, and external configuration before removing a declaration; detection is not proof that a key is unused.                                              |
+| `declared_unused`        | Warning | **Opt-in** (`--unused`). Check dynamic access, shared packages, and external configuration before removing a declaration; detection is not proof that a key is unused.                     |
 
 Drift compares key presence, not values, and ignores extra profile keys. Empty-value warnings cover referenced central keys only—not every central value or literal consumer assignment. See the [CLI reference](./cli.md#check) for expanded diagnostic output and source-only exclusions.
 
@@ -64,6 +64,7 @@ This is a text/regex scan, not runtime or dependency analysis:
 - Dynamic keys, destructuring, and aliases are not detected.
 - Matching comments or strings can produce findings.
 - Imported shared packages outside the consumer are not followed.
+- `declared_unused` is off unless you pass `--unused`; without it, only `used_missing` comes from the source scan.
 
 ## What a passing check does not guarantee
 

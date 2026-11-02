@@ -1,6 +1,6 @@
 import { existsSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { parseEnvFile, removeEnvKey, upsertEnvKey } from "./parse.ts";
+import { parseEnvFile, removeEnvKey, upsertEnvKey } from "../core/parse.ts";
 
 export const ENVMNG_CONFIG_FILE = ".envmng";
 /** Active profile key inside `.envmng`. */

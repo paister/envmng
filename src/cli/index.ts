@@ -1,14 +1,16 @@
 import type { Argv } from "yargs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { addEnvKey, resolveAddInput } from "./commands/add.ts";
-import { checkEnv } from "./commands/check.ts";
-import { createEnv } from "./commands/create.ts";
-import { deleteEnv } from "./commands/delete.ts";
-import { initEnv } from "./commands/init.ts";
-import { formatEnv } from "./commands/format.ts";
-import { removeEnvVar } from "./commands/remove.ts";
-import { AbortedError, setEnv } from "./commands/set.ts";
+import { addEnvKey } from "../commands/add.ts";
+import { checkEnv } from "../commands/check.ts";
+import { createEnv } from "../commands/create.ts";
+import { deleteEnv } from "../commands/delete.ts";
+import { formatEnv } from "../commands/format.ts";
+import { initEnv } from "../commands/init.ts";
+import { removeEnvVar } from "../commands/remove.ts";
+import { setEnv } from "../commands/set.ts";
+import { AbortedError } from "../core/errors.ts";
+import { resolveAddInput } from "./add-input.ts";
 
 const withName = <T>(y: Argv<T>) =>
   y.positional("name", {
@@ -32,8 +34,8 @@ export const runCli = async (root: string, argv: string[] = hideBin(process.argv
       .usage("$0 <command> [options]")
       .epilogue(
         [
-          "Central values:   /.{name}.env                    (from root .env.example)",
-          "Consumer templates: <dir>/.{name}.env             (dirs with .env.example, {{VAR}})",
+          "Central values:   /.envmng.{name}                    (from root .env.example)",
+          "Consumer templates: <dir>/.envmng.{name}             (dirs with .env.example, {{VAR}})",
           "Runtime output:   .env / <consumer>/.env",
         ].join("\n"),
       )
@@ -85,12 +87,12 @@ export const runCli = async (root: string, argv: string[] = hideBin(process.argv
       )
       .command(
         "create <name>",
-        "Copy .env.example → .<name>.env (root values + consumer templates)",
+        "Copy .env.example → .envmng.<name> (root values + consumer templates)",
         (y) =>
           withName(y).option("force", {
             type: "boolean",
             default: false,
-            describe: "Overwrite existing .<name>.env files",
+            describe: "Overwrite existing .envmng.<name> files",
           }),
         (args) => {
           createEnv({ root, name: String(args.name), force: Boolean(args.force) });
@@ -98,7 +100,7 @@ export const runCli = async (root: string, argv: string[] = hideBin(process.argv
       )
       .command(
         "set <name>",
-        "Render consumer .{name}.env + root .{name}.env → .env files",
+        "Render consumer .envmng.{name} + root .envmng.{name} → .env files",
         (y) =>
           withName(y)
             .option("yes", {
@@ -142,7 +144,7 @@ export const runCli = async (root: string, argv: string[] = hideBin(process.argv
             .option("sync-profiles", {
               type: "boolean",
               default: false,
-              describe: "Also copy the value to other root .{name}.env profiles that lack the key",
+              describe: "Also copy the value to other root .envmng.{name} profiles that lack the key",
             })
             .example("$0 add local --key NODE_ENV --value development", "Root catalogue + profile")
             .example("$0 add local --key MY_KEY --value 'x' --sync-profiles", "Also sync other profiles")
@@ -160,7 +162,7 @@ export const runCli = async (root: string, argv: string[] = hideBin(process.argv
       )
       .command(
         "remove <name>",
-        "Remove KEY from root .{name}.env",
+        "Remove KEY from root .envmng.{name}",
         (y) =>
           withName(y)
             .option("key", {
@@ -168,7 +170,7 @@ export const runCli = async (root: string, argv: string[] = hideBin(process.argv
               demandOption: true,
               describe: "Env key to remove",
             })
-            .example("$0 remove local --key MY_KEY", "Delete MY_KEY from .local.env"),
+            .example("$0 remove local --key MY_KEY", "Delete MY_KEY from .envmng.local"),
         (args) => {
           removeEnvVar({
             root,
@@ -179,7 +181,7 @@ export const runCli = async (root: string, argv: string[] = hideBin(process.argv
       )
       .command(
         "delete <name>",
-        "Delete an entire profile (root + consumer .{name}.env) — requires confirmation",
+        "Delete an entire profile (root + consumer .envmng.{name}) — requires confirmation",
         (y) =>
           withName(y).option("yes", {
             alias: "y",
@@ -207,7 +209,7 @@ export const runCli = async (root: string, argv: string[] = hideBin(process.argv
             .option("strict", {
               type: "boolean",
               default: false,
-              describe: "Treat warnings (empty values, key drift, unused) as failures",
+              describe: "Treat warnings (empty values, key drift, …) as failures",
             })
             .option("verbose", {
               alias: "v",
@@ -236,9 +238,15 @@ export const runCli = async (root: string, argv: string[] = hideBin(process.argv
               default: false,
               describe: "Also scan tests/ and *.test.ts (default: runtime sources only)",
             })
+            .option("unused", {
+              type: "boolean",
+              default: false,
+              describe: "Also warn when .env.example keys have no static source reference",
+            })
             .example("$0 check local", "One profile + source scan")
             .example("$0 check --fix", "Add used-but-missing keys to examples")
             .example("$0 check --no-source", "Profile completeness only")
+            .example("$0 check --unused", "Include declared-but-unused warnings")
             .example("$0 check --ignore NODE_ENV", "Skip a key in source scan"),
         (args) => {
           const name = args.name === undefined || args.name === "" ? undefined : String(args.name);
@@ -252,6 +260,7 @@ export const runCli = async (root: string, argv: string[] = hideBin(process.argv
             ignore,
             fix: Boolean(args.fix),
             includeTests: Boolean(args["include-tests"]),
+            includeUnused: Boolean(args.unused),
           });
           if (!ok) process.exit(1);
         },

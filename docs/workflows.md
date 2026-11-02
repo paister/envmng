@@ -6,7 +6,7 @@ Run these commands from the target repository root. Examples use `local`; substi
 
 ## Change an existing value
 
-Edit the root `.local.env`, then validate and regenerate:
+Edit the root `.envmng.local`, then validate and regenerate:
 
 ```bash
 pnpm exec envmng check local && pnpm exec envmng set local
@@ -21,8 +21,8 @@ For non-sensitive values, `pnpm exec envmng add local --key PORT --value 3001` u
 Suppose `apps/api` needs `PAYMENT_API_KEY`:
 
 1. Add `PAYMENT_API_KEY=` to root `.env.example`.
-2. Add `PAYMENT_API_KEY={{PAYMENT_API_KEY}}` to `apps/api/.env.example` and its relevant profile templates, such as `.local.env`.
-3. Add the real value to the ignored root `.local.env` using your editor. Supply values separately for other environments.
+2. Add `PAYMENT_API_KEY={{PAYMENT_API_KEY}}` to `apps/api/.env.example` and its relevant profile templates, such as `.envmng.local`.
+3. Add the real value to the ignored root `.envmng.local` using your editor. Supply values separately for other environments.
 4. Run `check local && set local` with the CLI as shown above.
 
 For existing files, `pnpm exec envmng check local --fix` can copy missing example assignments into profiles. [Review its write scope](./check.md#apply-repairs-with---fix) before using it; it may change other consumer profiles too.
@@ -47,7 +47,7 @@ Repeat for other profiles as needed. Do not nest the new consumer inside an exis
 
 ```bash
 pnpm exec envmng create staging
-# Fill root .staging.env and review consumer templates.
+# Fill root .envmng.staging and review consumer templates.
 pnpm exec envmng check staging && pnpm exec envmng set staging
 ```
 

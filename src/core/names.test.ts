@@ -2,19 +2,22 @@ import { describe, expect, it } from "vite-plus/test";
 import { assertEnvName, namedEnvFile, profileNameFromFilename } from "./names";
 
 describe("namedEnvFile", () => {
-  it("builds .<name>.env", () => {
-    expect(namedEnvFile("local")).toBe(".local.env");
-    expect(namedEnvFile("prod")).toBe(".prod.env");
+  it("builds .envmng.<name>", () => {
+    expect(namedEnvFile("local")).toBe(".envmng.local");
+    expect(namedEnvFile("prod")).toBe(".envmng.prod");
   });
 });
 
 describe("profileNameFromFilename", () => {
   it("parses profile filenames", () => {
-    expect(profileNameFromFilename(".local.env")).toBe("local");
-    expect(profileNameFromFilename(".staging-1.env")).toBe("staging-1");
+    expect(profileNameFromFilename(".envmng.local")).toBe("local");
+    expect(profileNameFromFilename(".envmng.staging-1")).toBe("staging-1");
     expect(profileNameFromFilename(".env.example")).toBeNull();
     expect(profileNameFromFilename(".env")).toBeNull();
-    expect(profileNameFromFilename("local.env")).toBeNull();
+    expect(profileNameFromFilename(".envmng")).toBeNull();
+    expect(profileNameFromFilename(".env.local")).toBeNull();
+    expect(profileNameFromFilename(".local.env")).toBeNull();
+    expect(profileNameFromFilename("envmng.local")).toBeNull();
   });
 });
 

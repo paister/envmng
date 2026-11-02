@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { runCli } from "./cli.ts";
-import { findMonorepoRoot } from "./root.ts";
+import { runCli } from "./cli/index.ts";
+import { findMonorepoRoot } from "./core/root.ts";
 
 const main = async () => {
   const root = findMonorepoRoot(process.cwd());

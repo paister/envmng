@@ -20,10 +20,10 @@ With pnpm: `pnpm add -D envmng`, then `pnpm exec envmng --help`. The remaining d
 
 ### Local development and unreleased builds
 
-In the envmng checkout, run `pnpm install && pnpm pack`. The `prepack` hook builds the CLI and library. Install the resulting `envmng-0.1.0.tgz` at the target repository root:
+In the envmng checkout, run `pnpm install && pnpm pack`. The `prepack` hook builds the CLI and library. Install the resulting `envmng-0.2.0.tgz` at the target repository root:
 
 ```bash
-npm install --save-dev /path/to/envmng-0.1.0.tgz
+npm install --save-dev /path/to/envmng-0.2.0.tgz
 ```
 
 For active development, run `pnpm run build` in the checkout, then `pnpm add -D /path/to/envmng` in the target repository. Rebuild and refresh the dependency after changes.
@@ -58,7 +58,7 @@ Create a root `.gitignore` if it does not exist. envmng adds ignore rules during
 pnpm exec envmng create local
 ```
 
-This copies examples to `.local.env` files and preserves existing profiles. Fill in real values in the **root** `.local.env`; keep placeholders in consumer profiles. Do not commit central profiles or real credentials.
+This copies examples to `.envmng.local` files and preserves existing profiles. Fill in real values in the **root** `.envmng.local`; keep placeholders in consumer profiles when possible. Do not commit `.envmng.*` profiles (root or consumer) or real credentials — `create` / `init` ignore them when a root `.gitignore` exists.
 
 ### 3. Check and generate
 
