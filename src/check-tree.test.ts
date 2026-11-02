@@ -18,15 +18,15 @@ const warnReport = (): CheckReport => ({
       severity: "warning",
       code: "empty_value",
       message: "FOO is empty",
-      file: ".local.env",
+      file: ".envmng.local",
       key: "FOO",
-      refs: ["apps/api/.local.env", "apps/web/.local.env"],
+      refs: ["apps/api/.envmng.local", "apps/web/.envmng.local"],
     },
     {
       severity: "warning",
       code: "drift_central_key",
       message: "EXTRA missing",
-      file: ".local.env",
+      file: ".envmng.local",
       key: "EXTRA",
     },
   ],
@@ -38,20 +38,23 @@ describe("formatCheckTree", () => {
     expect(out).toBe("check local  ✓ ok");
   });
 
-  it("renders grouped warnings as a tree", () => {
+  it("groups by file, then severity", () => {
     const out = formatCheckTree([warnReport()], { verbose: false });
-    expect(out).toContain("check local  ✕ 0 error(s) · 2 warning(s)");
-    expect(out).toContain("⚠ warnings (2)");
-    expect(out).toContain("empty value (1)");
-    expect(out).toContain("FOO");
-    expect(out).toContain("drift vs root .env.example (1)");
-    expect(out).not.toContain("apps/api/.local.env");
+    expect(out).toBe(
+      [
+        "check local  ✕ 0 error(s) · 2 warning(s)",
+        "└── .envmng.local",
+        "    └── ⚠ warnings (2)",
+        "        ├── FOO  empty value",
+        "        └── EXTRA  drift vs root .env.example",
+      ].join("\n")
+    );
   });
 
   it("shows refs when verbose", () => {
     const out = formatCheckTree([warnReport()], { verbose: true });
-    expect(out).toContain("apps/api/.local.env");
-    expect(out).toContain("apps/web/.local.env");
+    expect(out).toContain("apps/api/.envmng.local");
+    expect(out).toContain("apps/web/.envmng.local");
   });
 
   it("renders multiple profiles under check all", () => {
@@ -60,6 +63,7 @@ describe("formatCheckTree", () => {
     expect(out.startsWith("check all")).toBe(true);
     expect(out).toContain("├── local  ✓ ok");
     expect(out).toContain("└── prev  ✕");
+    expect(out).toContain("    └── .envmng.local");
   });
 
   it("labels source node when present", () => {
@@ -79,6 +83,45 @@ describe("formatCheckTree", () => {
     };
     const out = formatCheckTree([okReport("local"), source], { verbose: false });
     expect(out).toContain("profiles + source");
-    expect(out).toContain("NODE_ENV  ←  apps/workers/.env.example");
+    expect(out).toContain("└── source  ✕ 1 error(s) · 0 warning(s)");
+    expect(out).toContain("    └── apps/workers/.env.example");
+    expect(out).toContain("        └── ✕ errors (1)");
+    expect(out).toContain("            └── NODE_ENV  used in source, missing from .env.example");
+  });
+
+  it("splits issues across files under one profile", () => {
+    const report: CheckReport = {
+      name: "local",
+      errorCount: 1,
+      warningCount: 1,
+      issues: [
+        {
+          severity: "error",
+          code: "unresolved_placeholder",
+          message: "missing",
+          file: ".envmng.local",
+          key: "API_URL",
+        },
+        {
+          severity: "warning",
+          code: "drift_app_key",
+          message: "drift",
+          file: "apps/api/.envmng.local",
+          key: "PORT",
+        },
+      ],
+    };
+    const out = formatCheckTree([report], { verbose: false });
+    expect(out).toBe(
+      [
+        "check local  ✕ 1 error(s) · 1 warning(s)",
+        "├── .envmng.local",
+        "│   └── ✕ errors (1)",
+        "│       └── API_URL  unresolved placeholder",
+        "└── apps/api/.envmng.local",
+        "    └── ⚠ warnings (1)",
+        "        └── PORT  drift vs app .env.example",
+      ].join("\n")
+    );
   });
 });

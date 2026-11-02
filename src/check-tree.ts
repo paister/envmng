@@ -13,6 +13,7 @@ const CODE_LABEL: Record<CheckIssueCode, string> = {
 };
 
 const COLLAPSE_AFTER = 8;
+const NO_FILE = "(no file)";
 
 type TreeOpts = {
   verbose: boolean;
@@ -27,27 +28,20 @@ const push = (lines: string[], prefix: string, isLast: boolean, label: string) =
 
 const nest = (prefix: string, isLast: boolean) => `${prefix}${gutter(isLast)}`;
 
+/** Issue line under a file node — file is already the parent. */
 const issueLabel = (issue: CheckIssue): string => {
-  if (
-    issue.key &&
-    issue.file &&
-    (issue.code === "drift_app_key" ||
-      issue.code === "used_missing" ||
-      issue.code === "declared_unused")
-  ) {
-    return `${issue.key}  ←  ${issue.file}`;
-  }
-  if (issue.key) return issue.key;
-  if (issue.file) return issue.file;
-  return issue.message;
+  const code = CODE_LABEL[issue.code];
+  if (issue.key) return `${issue.key}  ${code}`;
+  return code;
 };
 
-const groupByCode = (issues: CheckIssue[]): [CheckIssueCode, CheckIssue[]][] => {
-  const map = new Map<CheckIssueCode, CheckIssue[]>();
+const groupByFile = (issues: CheckIssue[]): [string, CheckIssue[]][] => {
+  const map = new Map<string, CheckIssue[]>();
   for (const issue of issues) {
-    const list = map.get(issue.code) ?? [];
+    const file = issue.file ?? NO_FILE;
+    const list = map.get(file) ?? [];
     list.push(issue);
-    map.set(issue.code, list);
+    map.set(file, list);
   }
   return [...map.entries()];
 };
@@ -91,14 +85,24 @@ const renderSeverity = (
 ) => {
   const icon = severity === "error" ? "✕" : "⚠";
   push(lines, prefix, isLast, `${icon} ${severity}s (${issues.length})`);
-  const p = nest(prefix, isLast);
+  renderIssueNodes(lines, nest(prefix, isLast), issues, verbose);
+};
 
-  const groups = groupByCode(issues);
-  groups.forEach(([code, group], i) => {
-    const isLastGroup = i === groups.length - 1;
-    push(lines, p, isLastGroup, `${CODE_LABEL[code]} (${group.length})`);
-    renderIssueNodes(lines, nest(p, isLastGroup), group, verbose);
-  });
+const renderFileBody = (
+  lines: string[],
+  prefix: string,
+  issues: CheckIssue[],
+  verbose: boolean
+) => {
+  const errors = issues.filter(i => i.severity === "error");
+  const warnings = issues.filter(i => i.severity === "warning");
+
+  if (errors.length > 0) {
+    renderSeverity(lines, prefix, warnings.length === 0, "error", errors, verbose);
+  }
+  if (warnings.length > 0) {
+    renderSeverity(lines, prefix, true, "warning", warnings, verbose);
+  }
 };
 
 const renderProfileBody = (
@@ -107,15 +111,12 @@ const renderProfileBody = (
   report: CheckReport,
   verbose: boolean
 ) => {
-  const errors = report.issues.filter(i => i.severity === "error");
-  const warnings = report.issues.filter(i => i.severity === "warning");
-
-  if (errors.length > 0) {
-    renderSeverity(lines, prefix, warnings.length === 0, "error", errors, verbose);
-  }
-  if (warnings.length > 0) {
-    renderSeverity(lines, prefix, true, "warning", warnings, verbose);
-  }
+  const files = groupByFile(report.issues);
+  files.forEach(([file, issues], i) => {
+    const isLast = i === files.length - 1;
+    push(lines, prefix, isLast, file);
+    renderFileBody(lines, nest(prefix, isLast), issues, verbose);
+  });
 };
 
 const profileHeadline = (report: CheckReport): string => {

@@ -12,7 +12,7 @@ Every command supports `--help` / `-h`. The CLI uses the nearest ancestor contai
 
 ## Files and scope
 
-Root `.<name>.env` holds central values; each non-root directory owning `.env.example` is a **consumer**, with `.<name>.env` templates. Discovery skips hidden, dependency, build, and cache directories and stops at each consumer. See [Concepts](./concepts.md) for the file model.
+Root `.envmng.<name>` holds central values; each non-root directory owning `.env.example` is a **consumer**, with `.envmng.<name>` templates. Discovery skips hidden, dependency, build, and cache directories and stops at each consumer. See [Concepts](./concepts.md) for the file model.
 
 Profile names match `[a-z][a-z0-9_-]*`; `example` is reserved. Only the exact name `prod` triggers production confirmation.
 
@@ -38,7 +38,7 @@ Runs `create` → `check` (including source scanning) → `set`. Requires root `
 pnpm exec envmng create <name>
 ```
 
-Copies root and consumer `.env.example` files to `.<name>.env`, skipping existing targets. Requires the root example; does not activate the profile. Adds envmng ignore rules to root `.gitignore` **only if that file exists**; otherwise add rules yourself before storing secrets.
+Copies root and consumer `.env.example` files to `.envmng.<name>`, skipping existing targets. Requires the root example; does not activate the profile. Adds envmng ignore rules to root `.gitignore` **only if that file exists**; otherwise add rules yourself before storing secrets.
 
 | Flag      | Effect                                                                                                 |
 | --------- | ------------------------------------------------------------------------------------------------------ |

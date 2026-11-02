@@ -35,12 +35,12 @@ describe("listConsumerDirs", () => {
 describe("listExistingProfileNames", () => {
   it("unions root and consumer profile files", () => {
     const root = mkdtempSync(join(tmpdir(), "envmng-profiles-"));
-    writeFileSync(join(root, ".local.env"), "A=1\n");
+    writeFileSync(join(root, ".envmng.local"), "A=1\n");
     writeFileSync(join(root, ".env.example"), "A=\n");
     const api = join(root, "apps", "api");
     mkdirSync(api, { recursive: true });
-    writeFileSync(join(api, ".local.env"), "A={{A}}\n");
-    writeFileSync(join(api, ".prev.env"), "A={{A}}\n");
+    writeFileSync(join(api, ".envmng.local"), "A={{A}}\n");
+    writeFileSync(join(api, ".envmng.prev"), "A={{A}}\n");
     writeFileSync(join(api, ".env.example"), "A={{A}}\n");
 
     expect(listExistingProfileNames(root)).toEqual(["local", "prev"]);
@@ -52,7 +52,7 @@ describe("listExistingProfileNames", () => {
     const svc = join(root, "services", "api");
     mkdirSync(svc, { recursive: true });
     writeFileSync(join(svc, ".env.example"), "A={{A}}\n");
-    writeFileSync(join(svc, ".staging.env"), "A={{A}}\n");
+    writeFileSync(join(svc, ".envmng.staging"), "A={{A}}\n");
 
     expect(listExistingProfileNames(root)).toEqual(["staging"]);
   });

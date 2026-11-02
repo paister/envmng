@@ -1,12 +1,12 @@
 /** `local`, `prod`, `prev`, … — lowercase slug */
 export const ENV_NAME_RE = /^[a-z][a-z0-9_-]*$/;
 
-/** Matches `.{name}.env` profile files (not `.env.example`). */
-export const NAMED_ENV_FILE_RE = /^\.([a-z][a-z0-9_-]*)\.env$/;
+/** Matches `.envmng.{name}` profile files (not `.envmng` state or `.env.example`). */
+export const NAMED_ENV_FILE_RE = /^\.envmng\.([a-z][a-z0-9_-]*)$/;
 
-export const namedEnvFile = (name: string): string => `.${name}.env`;
+export const namedEnvFile = (name: string): string => `.envmng.${name}`;
 
-/** Extract profile slug from a filename like `.local.env`, or null. */
+/** Extract profile slug from a filename like `.envmng.local`, or null. */
 export const profileNameFromFilename = (filename: string): string | null => {
   const match = NAMED_ENV_FILE_RE.exec(filename);
   if (!match) return null;

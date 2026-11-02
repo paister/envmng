@@ -13,7 +13,7 @@ The package targets the public npm registry. Nothing publishes automatically; `p
    - `bugs.url`: its HTTPS issues URL.
 3. **Confirm the npm name.** Run `npm view envmng name version --registry=https://registry.npmjs.org/`. A 404 means no public package was found, not that npm guarantees the name is available. If needed, choose a scoped name and update installation examples and tests.
 4. **Review the release.** Inspect source, Git history, and package contents for secrets; ignore rules do not remove tracked files or historical leaks. Verify that security regression tests cover empty example declarations and no implicit activation by `add`.
-5. **Push and check CI.** Both supported CI versions must pass. Review the proposed `0.1.0` version; npm versions cannot be reused once published.
+5. **Push and check CI.** Both supported CI versions must pass. Review the proposed `0.2.0` version; npm versions cannot be reused once published.
 
 `pnpm run release:check` deliberately fails until license and repository metadata are present. It checks their presence and URL structure, not legal correctness, repository accessibility, or npm ownership.
 

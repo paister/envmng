@@ -11,7 +11,7 @@ export type AddOptions = {
   name: string;
   key: string;
   value: string;
-  /** Also upsert the key into other root `.{name}.env` profiles that lack it. */
+  /** Also upsert the key into other root `.envmng.{name}` profiles that lack it. */
   syncProfiles: boolean;
 };
 
@@ -26,7 +26,7 @@ export type AddInput = {
 
 /**
  * Introduce KEY into the root env catalogue + a named profile:
- * root `.env.example` (empty declaration) and root `.{name}.env` (value).
+ * root `.env.example` (empty declaration) and root `.envmng.{name}` (value).
  * Generated files and the active profile remain unchanged.
  * Consumer templates: edit `.env.example` or use `check --fix`.
  */

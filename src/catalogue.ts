@@ -6,7 +6,7 @@ import { parseEnvFile, upsertEnvKey } from "./parse.ts";
 export type UpsertResult = { existed: boolean; created: boolean };
 
 const consumerExampleHeader = (consumerRel: string): string =>
-  [`# ${consumerRel} — template for \`pnpm envmng create <name>\`.`, `# Copies to ${consumerRel}/.<name>.env; placeholders filled from root .<name>.env on set.`, ""].join("\n");
+  [`# ${consumerRel} — template for \`pnpm envmng create <name>\`.`, `# Copies to ${consumerRel}/.envmng.<name>; placeholders filled from root .envmng.<name> on set.`, ""].join("\n");
 
 const listConsumerProfileNames = (consumerDir: string): string[] => {
   const names: string[] = [];
@@ -89,7 +89,7 @@ export const ensureConsumerTemplates = (root: string, consumerRel: string, key: 
 
 /**
  * Parent directory of an issue file path like `apps/workers/.env.example`
- * or `services/api/.local.env`.
+ * or `services/api/.envmng.local`.
  */
 export const consumerRelFromIssueFile = (file: string | undefined): string | null => {
   if (!file) return null;

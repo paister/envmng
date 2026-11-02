@@ -6,25 +6,25 @@ A **profile** is a named configuration such as `local` or `staging`. A **consume
 
 ## Three kinds of files
 
-| File           | At the root                    | In a consumer                                 |
-| -------------- | ------------------------------ | --------------------------------------------- |
-| `.env.example` | Central keys with safe samples | Variables the app needs, usually placeholders |
-| `.<name>.env`  | Real values for the profile    | Profile-specific template                     |
-| `.env`         | Generated copy of root values  | Generated app configuration                   |
+| File             | At the root                    | In a consumer                                 |
+| ---------------- | ------------------------------ | --------------------------------------------- |
+| `.env.example`   | Central keys with safe samples | Variables the app needs, usually placeholders |
+| `.envmng.<name>` | Real values for the profile    | Profile-specific template                     |
+| `.env`           | Generated copy of root values  | Generated app configuration                   |
 
 ```text
 repository/
 ├── .env.example          # DATABASE_URL=
-├── .local.env            # DATABASE_URL=postgres://localhost/app
+├── .envmng.local         # DATABASE_URL=postgres://localhost/app
 ├── .env                  # Generated root values
 ├── .envmng               # ENV=local: last generated profile
 └── apps/api/
     ├── .env.example      # DATABASE_URL={{DATABASE_URL}}
-    ├── .local.env        # DATABASE_URL={{DATABASE_URL}}
+    ├── .envmng.local     # DATABASE_URL={{DATABASE_URL}}
     └── .env              # DATABASE_URL=postgres://localhost/app
 ```
 
-`create local` copies examples into missing `.local.env` files. `set local` generates `.env` from those profile files. Later changes to examples do not automatically update existing profiles; edit them or review repairs from [`check --fix`](./check.md#apply-repairs-with---fix).
+`create local` copies examples into missing `.envmng.local` files. `set local` generates `.env` from those profile files. Later changes to examples do not automatically update existing profiles; edit them or review repairs from [`check --fix`](./check.md#apply-repairs-with---fix).
 
 Apps load **only generated `.env`**, not the named profiles. `.envmng` records the last generated profile; editing it does not regenerate files or select a file for the library loader.
 
@@ -42,7 +42,7 @@ Prefer simple `KEY=value` assignments. See the [parser limits](./library.md#pars
 
 ## Names and discovery
 
-Profile names match `^[a-z][a-z0-9_-]*$`; `example` is reserved. Use `.local.env`, not `.env.local`. Only the exact name `prod` triggers the production confirmation in `set`.
+Profile names match `^[a-z][a-z0-9_-]*$`; `example` is reserved. Use `.envmng.local`, not `.env.local`. Only the exact name `prod` triggers the production confirmation in `set`.
 
 The CLI searches upward from the working directory for `pnpm-workspace.yaml` or `turbo.json`. Without a marker, it uses the working directory.
 
@@ -50,14 +50,14 @@ Below that root, any directory with `.env.example` becomes a consumer. Discovery
 
 ## Git and secrets
 
-| File                             | Commit?                                  |
-| -------------------------------- | ---------------------------------------- |
-| Root and consumer `.env.example` | Yes, safe samples only                   |
-| Root `.<name>.env`               | **No**: may contain secrets              |
-| Consumer `.<name>.env`           | Only if secret-free; prefer placeholders |
-| Any generated `.env`             | **No**                                   |
-| Root `.envmng`                   | **No**                                   |
+| File                             | Commit?                     |
+| -------------------------------- | --------------------------- |
+| Root and consumer `.env.example` | Yes, safe samples only      |
+| Root `.envmng.<name>`            | **No**: may contain secrets |
+| Consumer `.envmng.<name>`        | **No**: may contain secrets |
+| Any generated `.env`             | **No**                      |
+| Root `.envmng`                   | **No**                      |
 
-`init` and `create` add managed ignore rules to an **existing** root `.gitignore`. They do not create it or untrack committed files. Consumer profiles are not automatically ignored. Review changes before committing; rotate any credential that was exposed.
+`init` and `create` add managed ignore rules to an **existing** root `.gitignore` (`.env`, `.envmng`, `.envmng.*` at every level). They do not create the file or untrack committed files. Review changes before committing; rotate any credential that was exposed.
 
 Generated files are plaintext. Restrict access, avoid retaining them as CI artifacts, and never deliver server secrets to browser bundles. envmng does not encrypt, fetch, or validate credentials.

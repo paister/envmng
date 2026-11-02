@@ -11,7 +11,7 @@ pnpm exec envmng check local
 pnpm exec envmng check
 ```
 
-A named check validates that profile; an unnamed check discovers profiles from root and consumer `.<name>.env` files. Examples alone do not create profiles. With none found, the unnamed check fails before scanning sources: create a profile first.
+A named check validates that profile; an unnamed check discovers profiles from root and consumer `.envmng.<name>` files. Examples alone do not create profiles. With none found, the unnamed check fails before scanning sources: create a profile first.
 
 Source comparison runs once across all consumers. Its findings merge into a single-profile report or appear in a trailing `source` node for multiple profiles. Consumer discovery follows the [CLI scope](./cli.md#files-and-scope).
 

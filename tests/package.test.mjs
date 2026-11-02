@@ -80,7 +80,7 @@ test("the real npm tarball installs and exposes a working CLI and library", { ti
   writeFileSync(join(consumer, "pnpm-workspace.yaml"), "packages: []\n");
   writeFileSync(join(consumer, ".env.example"), "PACKAGE_TEST_VALUE=sample\n");
   run("installed CLI create local", bin, ["create", "local"], consumer, env);
-  assert.equal(readFileSync(join(consumer, ".local.env"), "utf8"), "PACKAGE_TEST_VALUE=sample\n");
+  assert.equal(readFileSync(join(consumer, ".envmng.local"), "utf8"), "PACKAGE_TEST_VALUE=sample\n");
   run("installed CLI set local", bin, ["set", "local"], consumer, env);
   assert.match(readFileSync(join(consumer, ".env"), "utf8"), /^PACKAGE_TEST_VALUE=sample$/m);
 

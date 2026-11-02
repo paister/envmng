@@ -37,7 +37,7 @@ test("creates profiles in the working directory when no root marker exists", (t)
 
   run(root, "create", "local");
 
-  assert.equal(readFileSync(join(root, ".local.env"), "utf8"), "CLI_TEST_VALUE=sample\n");
+  assert.equal(readFileSync(join(root, ".envmng.local"), "utf8"), "CLI_TEST_VALUE=sample\n");
 });
 
 test("add prod declares an empty example key without activating or exposing its value", (t) => {
@@ -49,7 +49,7 @@ test("add prod declares an empty example key without activating or exposing its 
   const output = run(root, "add", "prod", "--key", "API_TOKEN", "--value", "fake-cli-secret");
 
   assert.equal(readFileSync(join(root, ".env.example"), "utf8"), "PORT=3000\n\nAPI_TOKEN=\n");
-  assert.equal(readFileSync(join(root, ".prod.env"), "utf8"), "API_TOKEN=fake-cli-secret\n");
+  assert.equal(readFileSync(join(root, ".envmng.prod"), "utf8"), "API_TOKEN=fake-cli-secret\n");
   assert.equal(readFileSync(join(root, ".env"), "utf8"), "PORT=3000\n");
   assert.equal(readFileSync(join(root, ".envmng"), "utf8"), "ENV=local\n");
   assert.doesNotMatch(output, /fake-cli-secret/);
@@ -68,7 +68,7 @@ for (const marker of ["pnpm-workspace.yaml", "turbo.json"]) {
     run(consumer, "create", "local");
     run(consumer, "set", "local");
 
-    assert.equal(readFileSync(join(root, ".local.env"), "utf8"), "CLI_TEST_VALUE=sample\n");
+    assert.equal(readFileSync(join(root, ".envmng.local"), "utf8"), "CLI_TEST_VALUE=sample\n");
     assert.match(readFileSync(join(root, ".env"), "utf8"), /^CLI_TEST_VALUE=sample$/m);
     assert.match(readFileSync(join(consumer, ".env"), "utf8"), /^CLI_TEST_VALUE=sample$/m);
   });

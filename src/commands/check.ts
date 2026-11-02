@@ -190,7 +190,7 @@ export const applyCheckFixes = (root: string, reports: CheckReport[]): string[] 
       }
 
       if (issue.code === "drift_app_key" && issue.key && issue.file) {
-        // issue.file is the missing template path, e.g. apps/workers/.local.env
+        // issue.file is the missing template path, e.g. apps/workers/.envmng.local
         const templatePath = resolve(root, issue.file);
         const consumerRel = consumerRelFromIssueFile(issue.file);
         if (!consumerRel || !existsSync(templatePath)) continue;
@@ -219,7 +219,7 @@ export const checkEnv = ({ root, name, strict, verbose, skipSource, ignore, fix,
   const ignoreSet = new Set(ignore);
   const first = buildReports(root, name, skipSource, ignoreSet, includeTests);
   if (first === null) {
-    console.error("No profiles found (no .{name}.env under root or consumers).");
+    console.error("No profiles found (no .envmng.{name} under root or consumers).");
     console.error("Run: pnpm envmng create local");
     return { reports: [], ok: false, fixed: [] };
   }

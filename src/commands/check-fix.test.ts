@@ -11,9 +11,9 @@ describe("applyCheckFixes / check --fix", () => {
     const root = mkdtempSync(join(tmpdir(), "envmng-fix-"));
     mkdirSync(join(root, "apps", "workers", "src"), { recursive: true });
     writeFileSync(join(root, ".env.example"), "DATABASE_URL=\n");
-    writeFileSync(join(root, ".local.env"), "DATABASE_URL=postgres://x\n");
+    writeFileSync(join(root, ".envmng.local"), "DATABASE_URL=postgres://x\n");
     writeFileSync(join(root, "apps/workers/.env.example"), "DATABASE_URL={{DATABASE_URL}}\n");
-    writeFileSync(join(root, "apps/workers/.local.env"), "DATABASE_URL={{DATABASE_URL}}\n");
+    writeFileSync(join(root, "apps/workers/.envmng.local"), "DATABASE_URL={{DATABASE_URL}}\n");
     writeFileSync(
       join(root, "apps/workers/src/index.ts"),
       `console.log(process.env.NODE_ENV, process.env.DATABASE_URL);\n`
@@ -46,9 +46,9 @@ describe("applyCheckFixes / check --fix", () => {
     const root = mkdtempSync(join(tmpdir(), "envmng-fix-svc-"));
     mkdirSync(join(root, "services", "api", "src"), { recursive: true });
     writeFileSync(join(root, ".env.example"), "DATABASE_URL=\n");
-    writeFileSync(join(root, ".local.env"), "DATABASE_URL=postgres://x\n");
+    writeFileSync(join(root, ".envmng.local"), "DATABASE_URL=postgres://x\n");
     writeFileSync(join(root, "services/api/.env.example"), "DATABASE_URL={{DATABASE_URL}}\n");
-    writeFileSync(join(root, "services/api/.local.env"), "DATABASE_URL={{DATABASE_URL}}\n");
+    writeFileSync(join(root, "services/api/.envmng.local"), "DATABASE_URL={{DATABASE_URL}}\n");
     writeFileSync(join(root, "services/api/src/index.ts"), `console.log(process.env.API_TOKEN);\n`);
 
     const { fixed, reports } = checkEnv({
@@ -72,7 +72,7 @@ describe("applyCheckFixes / check --fix", () => {
   it("fills drift_central_key from root example sample", () => {
     const root = mkdtempSync(join(tmpdir(), "envmng-fix-drift-"));
     writeFileSync(join(root, ".env.example"), "FOO=sample\n");
-    writeFileSync(join(root, ".local.env"), "\n");
+    writeFileSync(join(root, ".envmng.local"), "\n");
 
     const report: CheckReport = {
       name: "local",
@@ -83,14 +83,14 @@ describe("applyCheckFixes / check --fix", () => {
           severity: "warning",
           code: "drift_central_key",
           key: "FOO",
-          file: ".local.env",
+          file: ".envmng.local",
           message: "missing",
         },
       ],
     };
 
     const logs = applyCheckFixes(root, [report]);
-    expect(logs).toContain("added FOO in .local.env");
-    expect(parseEnvFile(readFileSync(join(root, ".local.env"), "utf8")).get("FOO")).toBe("sample");
+    expect(logs).toContain("added FOO in .envmng.local");
+    expect(parseEnvFile(readFileSync(join(root, ".envmng.local"), "utf8")).get("FOO")).toBe("sample");
   });
 });

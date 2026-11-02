@@ -31,10 +31,10 @@ Or use `pnpm add -D envmng`. See [installation and setup](./docs/getting-started
 At the target repository root, create a `.env.example` with safe samples. Add `.env.example` in each app directory, using placeholders such as `DATABASE_URL={{DATABASE_URL}}`.
 
 ```bash
-# Copy examples to .local.env files without generating runtime output.
+# Copy examples to .envmng.local files without generating runtime output.
 npx envmng create local
 
-# Fill in real values in the root .local.env, then:
+# Fill in real values in the root .envmng.local, then:
 npx envmng check local && npx envmng set local
 ```
 
@@ -43,15 +43,15 @@ Apps load the generated `.env` files with their usual framework or runtime loade
 ```text
 .
 ├── .env.example                    # DATABASE_URL=
-├── .local.env                      # DATABASE_URL=postgres://…  (create)
+├── .envmng.local                   # DATABASE_URL=postgres://…  (create)
 └── apps/
     ├── api/
     │   ├── .env.example            # DATABASE_URL={{DATABASE_URL}}
-    │   ├── .local.env              # DATABASE_URL={{DATABASE_URL}}  (create)
+    │   ├── .envmng.local           # DATABASE_URL={{DATABASE_URL}}  (create)
     │   └── .env                    # DATABASE_URL=postgres://…  (set)
     └── web/
         ├── .env.example            # DATABASE_URL={{DATABASE_URL}}
-        ├── .local.env              # DATABASE_URL={{DATABASE_URL}}  (create)
+        ├── .envmng.local           # DATABASE_URL={{DATABASE_URL}}  (create)
         └── .env                    # DATABASE_URL=postgres://…  (set)
 ```
 

@@ -23,7 +23,7 @@ export const createEnv = ({ root, name, force, quiet = false }: CreateOptions): 
     throw new Error(`Missing root .env.example (template for central values).`);
   }
 
-  logGitignoreResult(ensureGitignore(root, { profileName: name }));
+  logGitignoreResult(ensureGitignore(root));
 
   if (existsSync(rootTarget) && !force) {
     console.log(`skip ${file} (exists; use --force to overwrite)`);

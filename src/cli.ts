@@ -32,8 +32,8 @@ export const runCli = async (root: string, argv: string[] = hideBin(process.argv
       .usage("$0 <command> [options]")
       .epilogue(
         [
-          "Central values:   /.{name}.env                    (from root .env.example)",
-          "Consumer templates: <dir>/.{name}.env             (dirs with .env.example, {{VAR}})",
+          "Central values:   /.envmng.{name}                    (from root .env.example)",
+          "Consumer templates: <dir>/.envmng.{name}             (dirs with .env.example, {{VAR}})",
           "Runtime output:   .env / <consumer>/.env",
         ].join("\n"),
       )
@@ -85,12 +85,12 @@ export const runCli = async (root: string, argv: string[] = hideBin(process.argv
       )
       .command(
         "create <name>",
-        "Copy .env.example → .<name>.env (root values + consumer templates)",
+        "Copy .env.example → .envmng.<name> (root values + consumer templates)",
         (y) =>
           withName(y).option("force", {
             type: "boolean",
             default: false,
-            describe: "Overwrite existing .<name>.env files",
+            describe: "Overwrite existing .envmng.<name> files",
           }),
         (args) => {
           createEnv({ root, name: String(args.name), force: Boolean(args.force) });
@@ -98,7 +98,7 @@ export const runCli = async (root: string, argv: string[] = hideBin(process.argv
       )
       .command(
         "set <name>",
-        "Render consumer .{name}.env + root .{name}.env → .env files",
+        "Render consumer .envmng.{name} + root .envmng.{name} → .env files",
         (y) =>
           withName(y)
             .option("yes", {
@@ -142,7 +142,7 @@ export const runCli = async (root: string, argv: string[] = hideBin(process.argv
             .option("sync-profiles", {
               type: "boolean",
               default: false,
-              describe: "Also copy the value to other root .{name}.env profiles that lack the key",
+              describe: "Also copy the value to other root .envmng.{name} profiles that lack the key",
             })
             .example("$0 add local --key NODE_ENV --value development", "Root catalogue + profile")
             .example("$0 add local --key MY_KEY --value 'x' --sync-profiles", "Also sync other profiles")
@@ -160,7 +160,7 @@ export const runCli = async (root: string, argv: string[] = hideBin(process.argv
       )
       .command(
         "remove <name>",
-        "Remove KEY from root .{name}.env",
+        "Remove KEY from root .envmng.{name}",
         (y) =>
           withName(y)
             .option("key", {
@@ -168,7 +168,7 @@ export const runCli = async (root: string, argv: string[] = hideBin(process.argv
               demandOption: true,
               describe: "Env key to remove",
             })
-            .example("$0 remove local --key MY_KEY", "Delete MY_KEY from .local.env"),
+            .example("$0 remove local --key MY_KEY", "Delete MY_KEY from .envmng.local"),
         (args) => {
           removeEnvVar({
             root,
@@ -179,7 +179,7 @@ export const runCli = async (root: string, argv: string[] = hideBin(process.argv
       )
       .command(
         "delete <name>",
-        "Delete an entire profile (root + consumer .{name}.env) — requires confirmation",
+        "Delete an entire profile (root + consumer .envmng.{name}) — requires confirmation",
         (y) =>
           withName(y).option("yes", {
             alias: "y",

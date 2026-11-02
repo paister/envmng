@@ -104,7 +104,7 @@ export const analyzeProfile = (snap: ProfileSnapshot): CheckReport => {
 
   /** key → app template files that reference it via {{KEY}} */
   const emptyRefs = new Map<string, string[]>();
-  const unresolvedSeen = new Set<string>();
+  const unresolvedRefs = new Map<string, string[]>();
 
   for (const app of snap.apps) {
     if (app.exampleText === null) continue;
@@ -137,16 +137,9 @@ export const analyzeProfile = (snap: ProfileSnapshot): CheckReport => {
     for (const key of collectPlaceholders(app.templateText)) {
       if (centralValues === null) continue;
       if (!centralValues.has(key)) {
-        if (!unresolvedSeen.has(key)) {
-          unresolvedSeen.add(key);
-          issues.push({
-            severity: "error",
-            code: "unresolved_placeholder",
-            message: `{{${key}}} has no entry in ${profileFile} (e.g. ${templateFile})`,
-            file: profileFile,
-            key,
-          });
-        }
+        const refs = unresolvedRefs.get(key) ?? [];
+        refs.push(templateFile);
+        unresolvedRefs.set(key, refs);
         continue;
       }
       if (isEmptyEnvValue(centralValues.get(key)!)) {
@@ -155,6 +148,20 @@ export const analyzeProfile = (snap: ProfileSnapshot): CheckReport => {
         emptyRefs.set(key, refs);
       }
     }
+  }
+
+  for (const key of [...unresolvedRefs.keys()].sort()) {
+    const refs = unresolvedRefs.get(key)!;
+    const shown = refs.slice(0, 3).join(", ");
+    const more = refs.length > 3 ? ` (+${refs.length - 3} more)` : "";
+    issues.push({
+      severity: "error",
+      code: "unresolved_placeholder",
+      message: `{{${key}}} has no entry in ${profileFile} (referenced by ${shown}${more})`,
+      file: profileFile,
+      key,
+      refs,
+    });
   }
 
   for (const key of [...emptyRefs.keys()].sort()) {

@@ -11,8 +11,8 @@ export const ENVMNG_GITIGNORE_CORE = [
   "!.env.example",
   "!**/.env.example",
   ".envmng",
-  /** Root named profiles (secrets): .local.env, .prod.env, … */
-  "/.*.env",
+  /** Named profiles at root and under consumers (may contain secrets). */
+  ".envmng.*",
 ] as const;
 
 export type EnsureGitignoreResult = {
@@ -24,59 +24,34 @@ export type EnsureGitignoreResult = {
 
 const normalizeEntry = (line: string): string => line.trim();
 
-/** Root profile glob as commonly written in .gitignore (`/.*\.env`). */
-const ROOT_PROFILE_GLOB_ESCAPED = "/.*\\.env";
-const ROOT_PROFILE_GLOB = "/.*.env";
-
-/** True if `entry` (or an equivalent pattern) already appears as a gitignore line. */
+/** True if `entry` already appears as a gitignore line. */
 export const gitignoreHasEntry = (text: string, entry: string): boolean => {
   const wanted = normalizeEntry(entry);
-  const equivalents = new Set([wanted]);
-  // `/.*\.env` (escaped dot) ≡ `/.*.env`
-  if (wanted === ROOT_PROFILE_GLOB || wanted === ROOT_PROFILE_GLOB_ESCAPED) {
-    equivalents.add(ROOT_PROFILE_GLOB);
-    equivalents.add(ROOT_PROFILE_GLOB_ESCAPED);
-  }
 
   for (const raw of text.split(/\r?\n/)) {
     const line = normalizeEntry(raw);
     if (!line || line.startsWith("#")) continue;
-    if (equivalents.has(line)) return true;
+    if (line === wanted) return true;
   }
   return false;
 };
 
-const buildManagedBlock = (extraEntries: string[]): string => {
-  const seen = new Set<string>();
-  const body: string[] = [];
-  for (const entry of [...ENVMNG_GITIGNORE_CORE, ...extraEntries]) {
-    if (seen.has(entry)) continue;
-    seen.add(entry);
-    body.push(entry);
-  }
-  return [BEGIN, "# managed by envmng (init / create)", ...body, END].join("\n");
-};
+const buildManagedBlock = (): string =>
+  [BEGIN, "# managed by envmng (init / create)", ...ENVMNG_GITIGNORE_CORE, END].join("\n");
 
 /**
  * Ensure envmng ignore rules exist in root `.gitignore`.
  * No-ops when the file is missing (does not create one).
  */
-export const ensureGitignore = (
-  root: string,
-  options: { profileName?: string } = {}
-): EnsureGitignoreResult => {
+export const ensureGitignore = (root: string): EnsureGitignoreResult => {
   const path = resolve(root, ".gitignore");
   if (!existsSync(path)) {
     return { path: null, updated: false, added: [] };
   }
 
   const original = readFileSync(path, "utf8");
-  const extras: string[] = [];
-  if (options.profileName) {
-    extras.push(`/.${options.profileName}.env`);
-  }
 
-  const missing = [...ENVMNG_GITIGNORE_CORE, ...extras].filter(
+  const missing = [...ENVMNG_GITIGNORE_CORE].filter(
     entry => !gitignoreHasEntry(original, entry)
   );
 
@@ -89,8 +64,8 @@ export const ensureGitignore = (
 
   let next: string;
   if (begin >= 0 && end > begin) {
-    // Canonical refresh of the managed block (full core + profile extras).
-    const block = buildManagedBlock(extras);
+    // Canonical refresh of the managed block.
+    const block = buildManagedBlock();
     const afterEnd = end + END.length;
     next = `${original.slice(0, begin)}${block}${original.slice(afterEnd)}`;
   } else {
