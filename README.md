@@ -1,17 +1,20 @@
-# envmng
-
-[![npm version](https://img.shields.io/npm/v/envmng.svg)](https://www.npmjs.com/package/envmng)
+[![npm version](https://img.shields.io/npm/v/envmng?logo=npm&logoColor=red)](https://www.npmjs.com/package/envmng)
+[![NPM Downloads](https://img.shields.io/npm/dw/envmng?logo=npm&logoColor=red&label=npm%20downloads)](https://www.npmjs.com/package/envmng)
 [![CI](https://github.com/paister/envmng/actions/workflows/ci.yml/badge.svg)](https://github.com/paister/envmng/actions/workflows/ci.yml)
 [![license](https://img.shields.io/npm/l/envmng.svg)](LICENSE)
 
-**Define environment variables once. Generate the `.env` files each app needs.**
+<h1 align="center">🗂️ envmng</h1>
+<p align="center">
+  <strong>Define environment variables once. Generate the <code>.env</code> files each app needs.</strong>
+  <br/>
+  Central profiles, per-app templates, and checks for missing values before you generate.
+</p>
 
-A CLI for managing environment files across apps and packages. Keep values in a central profile, select each app's variables with templates, and check for missing values and declarations before generating files.
-
-```text
-.local.env                  apps/api/.local.env           apps/api/.env
-DATABASE_URL=postgres://…  + DATABASE_URL={{DATABASE_URL}} → DATABASE_URL=postgres://…
-```
+<p align="center">
+  <a href="./docs/getting-started.md"><strong>Documentation</strong></a> ·
+  <a href="#quick-start"><strong>Quick Start</strong></a> ·
+  <a href="https://github.com/paister/envmng/issues"><strong>Report Bug</strong></a>
+</p>
 
 ## Install
 
@@ -36,6 +39,21 @@ npx envmng check local && npx envmng set local
 ```
 
 Apps load the generated `.env` files with their usual framework or runtime loader. Edit profiles, not generated files; run `set` again after changes.
+
+```text
+.
+├── .env.example                    # DATABASE_URL=
+├── .local.env                      # DATABASE_URL=postgres://…  (create)
+└── apps/
+    ├── api/
+    │   ├── .env.example            # DATABASE_URL={{DATABASE_URL}}
+    │   ├── .local.env              # DATABASE_URL={{DATABASE_URL}}  (create)
+    │   └── .env                    # DATABASE_URL=postgres://…  (set)
+    └── web/
+        ├── .env.example            # DATABASE_URL={{DATABASE_URL}}
+        ├── .local.env              # DATABASE_URL={{DATABASE_URL}}  (create)
+        └── .env                    # DATABASE_URL=postgres://…  (set)
+```
 
 ## Commands
 
