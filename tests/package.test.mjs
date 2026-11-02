@@ -35,6 +35,11 @@ test("the real npm tarball installs and exposes a working CLI and library", { ti
   // Test normal Node resolution, without inherited preload hooks or fallback paths.
   delete env.NODE_OPTIONS;
   delete env.NODE_PATH;
+  // Nested npm must not inherit publish/lifecycle config (e.g. npm_config_dry_run
+  // from `npm publish --dry-run` makes `npm pack` report a tarball it never writes).
+  for (const key of Object.keys(env)) {
+    if (/^npm_/i.test(key)) delete env[key];
+  }
 
   const packOutput = run("npm pack", "npm", ["pack", "--ignore-scripts", "--json", "--pack-destination", temp, "--cache", cache], projectRoot, env, 60_000);
   let packages;
