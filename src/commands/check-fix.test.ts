@@ -94,3 +94,41 @@ describe("applyCheckFixes / check --fix", () => {
     expect(parseEnvFile(readFileSync(join(root, ".envmng.local"), "utf8")).get("FOO")).toBe("sample");
   });
 });
+
+describe("check --unused", () => {
+  const fixture = () => {
+    const root = mkdtempSync(join(tmpdir(), "envmng-unused-"));
+    mkdirSync(join(root, "apps", "web", "src"), { recursive: true });
+    writeFileSync(join(root, ".env.example"), "USED=\nORPHAN=\n");
+    writeFileSync(join(root, ".envmng.local"), "USED=1\nORPHAN=1\n");
+    writeFileSync(join(root, "apps/web/.env.example"), "USED={{USED}}\nORPHAN={{ORPHAN}}\n");
+    writeFileSync(join(root, "apps/web/.envmng.local"), "USED={{USED}}\nORPHAN={{ORPHAN}}\n");
+    writeFileSync(join(root, "apps/web/src/index.ts"), `console.log(process.env.USED);\n`);
+    return root;
+  };
+
+  const base = (root: string, includeUnused: boolean) =>
+    checkEnv({
+      root,
+      name: "local",
+      strict: false,
+      verbose: false,
+      skipSource: false,
+      ignore: [],
+      fix: false,
+      includeTests: false,
+      includeUnused,
+    });
+
+  it("omits declared_unused by default", () => {
+    const { reports } = base(fixture(), false);
+    expect(reports.flatMap(r => r.issues).some(i => i.code === "declared_unused")).toBe(false);
+  });
+
+  it("reports declared_unused with includeUnused", () => {
+    const { reports } = base(fixture(), true);
+    const unused = reports.flatMap(r => r.issues).filter(i => i.code === "declared_unused");
+    expect(unused.map(i => i.key)).toContain("ORPHAN");
+    expect(unused.map(i => i.key)).not.toContain("USED");
+  });
+});

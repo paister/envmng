@@ -207,7 +207,7 @@ export const runCli = async (root: string, argv: string[] = hideBin(process.argv
             .option("strict", {
               type: "boolean",
               default: false,
-              describe: "Treat warnings (empty values, key drift, unused) as failures",
+              describe: "Treat warnings (empty values, key drift, …) as failures",
             })
             .option("verbose", {
               alias: "v",
@@ -236,9 +236,15 @@ export const runCli = async (root: string, argv: string[] = hideBin(process.argv
               default: false,
               describe: "Also scan tests/ and *.test.ts (default: runtime sources only)",
             })
+            .option("unused", {
+              type: "boolean",
+              default: false,
+              describe: "Also warn when .env.example keys have no static source reference",
+            })
             .example("$0 check local", "One profile + source scan")
             .example("$0 check --fix", "Add used-but-missing keys to examples")
             .example("$0 check --no-source", "Profile completeness only")
+            .example("$0 check --unused", "Include declared-but-unused warnings")
             .example("$0 check --ignore NODE_ENV", "Skip a key in source scan"),
         (args) => {
           const name = args.name === undefined || args.name === "" ? undefined : String(args.name);
@@ -252,6 +258,7 @@ export const runCli = async (root: string, argv: string[] = hideBin(process.argv
             ignore,
             fix: Boolean(args.fix),
             includeTests: Boolean(args["include-tests"]),
+            includeUnused: Boolean(args.unused),
           });
           if (!ok) process.exit(1);
         },

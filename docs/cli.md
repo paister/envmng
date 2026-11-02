@@ -102,6 +102,7 @@ Checks one profile or all profiles found at root and in consumers. Source compar
 | `--no-source`     | Skip source/example comparison and source-driven repairs.                                                                                            |
 | `--ignore KEY`    | Exclude a key from source/example comparison and its repairs only; repeatable. Does not suppress profile findings.                                   |
 | `--include-tests` | Include test directories and test/spec files in source scanning.                                                                                     |
+| `--unused`        | Opt in to `declared_unused` warnings (example keys with no static source hit). Off by default — noisy for shared packages and dynamic access.        |
 | `--fix`           | Apply one catalogue/drift repair pass, then re-analyze changed files. Can overwrite assignments in other consumer profiles, even with a named check. |
 
 Exits `1` for errors, no discovered profiles, or strict-mode warnings; otherwise `0`. Repairs use the post-fix report, so writes do not imply success. See [Troubleshooting](./check.md) for codes, repair scope, and scan limits.

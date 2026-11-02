@@ -27,6 +27,11 @@ export type CheckOptions = {
   fix: boolean;
   /** Include `tests/` / `*.test.ts` in the source scan (default: runtime only). */
   includeTests: boolean;
+  /**
+   * Report `declared_unused` (example keys with no static source hit).
+   * Off by default — high false-positive rate (shared packages, dynamic access).
+   */
+  includeUnused?: boolean;
 };
 
 export type CheckAllResult = {
@@ -66,7 +71,12 @@ const analyzeOne = (root: string, name: string): CheckReport => {
 };
 
 /** Source ↔ example issues for every consumer (profile-independent). */
-export const collectSourceIssues = (root: string, ignore: ReadonlySet<string>, includeTests: boolean): CheckIssue[] => {
+export const collectSourceIssues = (
+  root: string,
+  ignore: ReadonlySet<string>,
+  includeTests: boolean,
+  includeUnused: boolean,
+): CheckIssue[] => {
   const issues: CheckIssue[] = [];
 
   for (const consumerDir of listConsumerDirs(root)) {
@@ -97,7 +107,7 @@ export const collectSourceIssues = (root: string, ignore: ReadonlySet<string>, i
           message: issue.message,
           refs: [issue.message],
         });
-      } else {
+      } else if (includeUnused) {
         issues.push({
           severity: "warning",
           code: "declared_unused",
@@ -132,6 +142,7 @@ const buildReports = (
   skipSource: boolean,
   ignoreSet: ReadonlySet<string>,
   includeTests: boolean,
+  includeUnused: boolean,
 ): { reports: CheckReport[]; sourceIssues: CheckIssue[] } | null => {
   let profileReports: CheckReport[];
 
@@ -143,7 +154,9 @@ const buildReports = (
     profileReports = names.map((profile) => analyzeOne(root, profile));
   }
 
-  const sourceIssues = skipSource ? [] : collectSourceIssues(root, ignoreSet, includeTests);
+  const sourceIssues = skipSource
+    ? []
+    : collectSourceIssues(root, ignoreSet, includeTests, includeUnused);
   return {
     reports: attachSourceIssues(profileReports, sourceIssues),
     sourceIssues,
@@ -215,9 +228,19 @@ export const applyCheckFixes = (root: string, reports: CheckReport[]): string[] 
  * Validate one profile, or every profile present on disk when `name` is omitted.
  * Always includes a static source ↔ `.env.example` scan (unless `--no-source`).
  */
-export const checkEnv = ({ root, name, strict, verbose, skipSource, ignore, fix, includeTests }: CheckOptions): CheckAllResult => {
+export const checkEnv = ({
+  root,
+  name,
+  strict,
+  verbose,
+  skipSource,
+  ignore,
+  fix,
+  includeTests,
+  includeUnused = false,
+}: CheckOptions): CheckAllResult => {
   const ignoreSet = new Set(ignore);
-  const first = buildReports(root, name, skipSource, ignoreSet, includeTests);
+  const first = buildReports(root, name, skipSource, ignoreSet, includeTests, includeUnused);
   if (first === null) {
     console.error("No profiles found (no .envmng.{name} under root or consumers).");
     console.error("Run: pnpm envmng create local");
@@ -233,7 +256,7 @@ export const checkEnv = ({ root, name, strict, verbose, skipSource, ignore, fix,
       console.log(`→ fix (${fixed.length})`);
       for (const line of fixed) console.log(`  ${line}`);
       console.log("");
-      const again = buildReports(root, name, skipSource, ignoreSet, includeTests);
+      const again = buildReports(root, name, skipSource, ignoreSet, includeTests, includeUnused);
       if (again) {
         reports = again.reports;
         sourceIssues = again.sourceIssues;
